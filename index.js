@@ -8,19 +8,21 @@ async function run() {
   // 1. 创建 Renderer (Rust 侧)
   const renderer = await OffscreenImageRenderer.new();
 
+  const { imageData, viewport, options } = temp
+  const { width, height, data, slope, intercept } = imageData
+  const { transform, invert, canvasSize } = viewport
+  const { ww, wl, colorMap } = options
+
   // 2. 准备数据
-  const width = 512;
-  const height = 512;
   const pixelData = new Float32Array(width * height);
-  // ... 填充 pixelData ...
-  temp.imageData.data.forEach((v, i) => {
+  data.forEach((v, i) => {
     pixelData[i] = v
   })
 
   // 矩阵处理：JS 端需要先把 Transform 转换为 float array
   // 注意：Rust 代码期望的是 16 个元素的数组 (mat4)
   // 你需要把 JS 中的 transform.m (通常是6个元素) 转为 16 个元素的列主序矩阵
-  const m = temp.viewport.transform.m;
+  const m = transform.m;
   const transformMatrix = new Float32Array([
     m[0], m[1], 0, 0,
     m[2], m[3], 0, 0,
@@ -28,8 +30,8 @@ async function run() {
     m[4], m[5], 0, 1
   ]);
 
-  const canvasWidth = 800;
-  const canvasHeight = 600;
+  const canvasWidth = canvasSize.x;
+  const canvasHeight = canvasSize.y;
 
   // 3. 调用 Render
   try {
@@ -37,14 +39,14 @@ async function run() {
       width,
       height,
       pixelData,
-      1.0, // slope
-      0.0, // intercept
+      slope, // slope
+      intercept, // intercept
       canvasWidth,
       canvasHeight,
       transformMatrix,
-      false, // invert
-      255.0, // ww
-      127.5, // wl
+      invert, // invert
+      ww, // ww
+      wl, // wl
       null   // colormap (Option<Vec<f32>>)
     );
 
