@@ -993,7 +993,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "wgpu_image_renderer"
+name = "wgpu_bilinear_interpolation"
 version = "0.1.0"
 dependencies = [
  "bytemuck",

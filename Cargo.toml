@@ -1,5 +1,5 @@
 [package]
-name = "wgpu_image_renderer"
+name = "wgpu_bilinear_interpolation"
 version = "0.1.0"
 edition = "2024"
 repository = "https://github.com/solace-lee/offscreen-renderer"

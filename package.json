@@ -1,6 +1,6 @@
 
 {
-  "name": "react-wgpu-renderer",
+  "name": "wgpu_bilinear_interpolation",
   "private": true,
   "version": "0.0.0",
   "type": "module",
