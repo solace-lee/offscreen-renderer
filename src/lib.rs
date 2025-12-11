@@ -117,10 +117,11 @@ impl OffscreenImageRenderer {
     pub async fn new() -> Result<OffscreenImageRenderer, JsValue> {
         // --- API 变更 1: Instance 创建 ---
         // v24 需要 InstanceDescriptor
-        let instance = wgpu::Instance::new(&&wgpu::InstanceDescriptor {
+        let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor {
             backends: wgpu::Backends::all(), 
             flags: wgpu::InstanceFlags::default(),
             backend_options: Default::default(),
+            memory_budget_thresholds: Default::default(),
         });
         
         let adapter = instance
@@ -130,7 +131,7 @@ impl OffscreenImageRenderer {
                 compatible_surface: None,
             })
             .await
-            .ok_or_else(|| JsValue::from_str("No appropriate GPUAdapter found."))?;
+            .map_err(|_e| JsValue::from_str("No appropriate GPUAdapter found."))?;
 
         // --- API 变更 2: 解决 Limits 报错 ---
         // 直接使用 adapter 支持的 limits，避免手动设置不被识别的旧参数
@@ -141,11 +142,12 @@ impl OffscreenImageRenderer {
             .request_device(
                 &wgpu::DeviceDescriptor {
                     label: Some("WebGPU Device"),
+                    experimental_features: Default::default(),
+                    trace: Default::default(),
                     required_features: wgpu::Features::empty(),
                     required_limits,
                     memory_hints: wgpu::MemoryHints::Performance, // v24 新增
-                },
-                None,
+                }
             )
             .await
             .map_err(|e| JsValue::from_str(&format!("Failed to create device: {:?}", e)))?;
@@ -312,14 +314,14 @@ impl OffscreenImageRenderer {
         let input_texture = self.input_texture.as_ref().unwrap();
 
         self.queue.write_texture(
-            wgpu::ImageCopyTexture {
+            wgpu::TexelCopyTextureInfo {
                 texture: input_texture,
                 mip_level: 0,
                 origin: wgpu::Origin3d::ZERO,
                 aspect: wgpu::TextureAspect::All,
             },
             bytemuck::cast_slice(img_data),
-            wgpu::ImageDataLayout {
+            wgpu::TexelCopyBufferLayout {
                 offset: 0,
                 bytes_per_row: Some(img_width * 4),
                 rows_per_image: Some(img_height),
@@ -419,6 +421,7 @@ impl OffscreenImageRenderer {
                 label: Some("Render Pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: &view,
+                    depth_slice: Some(0),
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color::BLACK),
@@ -437,15 +440,15 @@ impl OffscreenImageRenderer {
         }
 
         encoder.copy_texture_to_buffer(
-            wgpu::ImageCopyTexture {
+            wgpu::TexelCopyTextureInfo {
                 texture: &output_texture,
                 mip_level: 0,
                 origin: wgpu::Origin3d::ZERO,
                 aspect: wgpu::TextureAspect::All,
             },
-            wgpu::ImageCopyBuffer {
+            wgpu::TexelCopyBufferInfo {
                 buffer: &read_buffer,
-                layout: wgpu::ImageDataLayout {
+                layout: wgpu::TexelCopyBufferLayout {
                     offset: 0,
                     bytes_per_row: Some(padded_bytes_per_row),
                     rows_per_image: Some(out_height),
