@@ -2,6 +2,10 @@
 name = "wgpu_image_renderer"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/solace-lee/offscreen-renderer"
+description = "一个使用 wgpu 进行图像渲染的 Rust 库"
+license = "MIT"
+authors = ["solace-lee <<solace.lee@outlook.com>>"]
 
 [lib]
 crate-type = ["cdylib"]
