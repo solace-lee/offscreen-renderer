@@ -11,7 +11,6 @@ authors = ["solace-lee <<solace.lee@outlook.com>>"]
 crate-type = ["cdylib"]
 
 [dependencies]
-# 使用最新的稳定版 24.0
 wgpu = { version = "27.0", features = ["webgpu"] }
 bytemuck = { version = "1.24", features = ["derive"] }
 wasm-bindgen = "0.2"
