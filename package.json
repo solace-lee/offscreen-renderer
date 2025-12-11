@@ -1,6 +1,6 @@
 
 {
-  "name": "wgpu_bilinear_interpolation",
+  "name": "wgpu-bilinear-interpolation",
   "private": true,
   "version": "0.0.0",
   "type": "module",

@@ -871,6 +871,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "wgpu-bilinear-interpolation"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "futures-intrusive",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wgpu",
+]
+
+[[package]]
 name = "wgpu-core"
 version = "27.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -990,18 +1002,6 @@ dependencies = [
  "log",
  "thiserror 2.0.17",
  "web-sys",
-]
-
-[[package]]
-name = "wgpu_bilinear_interpolation"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "futures-intrusive",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "wgpu",
 ]
 
 [[package]]
